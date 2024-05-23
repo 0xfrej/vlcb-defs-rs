@@ -1,10 +1,12 @@
 require_relative 'schema'
+require_relative 'lang/rust/generator'
 
 file_path = './definition.yaml'
 begin
-    validated_data = load_and_validate_yaml(file_path)
+    spec = load_and_validate_yaml(file_path)
     puts "Validation passed"
-    puts validated_data
 rescue ArgumentError => e
-    puts "Validation failed: #{e.message}"
+    raise "Validation failed: #{e.message}"
 end
+
+generate_rust(spec)

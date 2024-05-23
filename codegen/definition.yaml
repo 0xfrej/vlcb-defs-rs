@@ -6,7 +6,7 @@ spec:
     comments: |
       ARM Processor type codes (used by FCU to identify correct bootloader compatibility)
     body:
-      - identifier: 1176JZF_S
+      - identifier: Arm1176JzfS
         value: 1
         comments: As used in Raspberry Pi
       - identifier: CortexA7
@@ -463,9 +463,9 @@ spec:
       - identifier: CANUSB
         value: 0xFD
         comments: USB interface
-      - identifier: CANDEV
-        value: 0xFC
-        comments: Module type for use by developers when developing something new
+      # - identifier: CANDEV
+      #   value: 0xFC
+      #   comments: Module type for use by developers when developing something new
   - type: Enum
     identifier: CbusMicrochipProcessors
     data_type: u8
