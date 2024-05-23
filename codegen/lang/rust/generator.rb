@@ -1,5 +1,5 @@
 require_relative "../../template"
-require 'toml-rb'
+require 'tomlib'
 require 'set'
 
 TEMPLATE_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'templates/imports.erb'))
@@ -10,20 +10,19 @@ TARGET_PATH = File.expand_path(File.join(OUTPUT_PATH, 'generated.rs'))
 
 def update_crate_version(spec)
   cargo_toml_content = File.read(CARGO_TOML_PATH)
-  cargo_toml = TomlRB.parse(cargo_toml_content)
-  cargo_toml['package']['version'] = spec[:version]
+  cargo_toml = Tomlib.load(cargo_toml_content)
 
   begin
     current_version_str = cargo_toml['package']['version']
     new_version_str = spec[:version]
     current_version = Semverse::Version.new(current_version_str)
     new_version = Semverse::Version.new(new_version_str)
-    if current_version = new_version
+    if current_version == new_version
       puts "Current Cargo.toml has the same version as the code generation spec. Please be sure that you're not overwriting already published version"
     elsif current_version < new_version
       cargo_toml['package']['version'] = new_version_str
 
-      File.write(CARGO_TOML_PATH, TomlRB.dump(cargo_toml, pretty: true))
+      File.write(CARGO_TOML_PATH, Tomlib.dump(cargo_toml, indent: false))
 
       puts "Updated from version #{current_version_str} to #{new_version_str} in Cargo.toml."
     else

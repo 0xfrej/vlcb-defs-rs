@@ -1,31 +1,31 @@
-[dependencies.defmt]
-optional = true
-version = "0.3"
+[dependencies]
+bitflags = "2.5.0"
+
 [dependencies.num-traits]
+version = "0.2"
 default-features = false
 features = []
-version = "0.2"
+
 [dependencies.num_enum]
-default-features = false
 version = "0.7"
-[dependencies.bitflags]
-version = "2.5.0"
-[dev-dependencies]
-anyhow = "1.0"
-prettyplease = "0.2"
-quote = { version = "1.0", default-features = false }
-syn = { version = "2.0", default-features = false, features = ["parsing", "printing"] }
-[features]
-defmt = ["dep:defmt"]
+default-features = false
+
+[dependencies.defmt]
+version = "0.3"
+optional = true
+
 [package]
-authors = ["Freja <me@freja.codes>"]
-documentation = "https://docs.rs/vlcb-defs"
-edition = "2021"
-exclude = ["/codegen"]
-homepage = "https://github.com/0xfrej/vlcb-defs-rs"
-keywords = ["lcb", "vlcb", "cbus", "merg"]
-license = "Apache-2"
 name = "vlcb-defs"
-repository = "https://github.com/0xfrej/vlcb-defs-rs"
-rust-version = "1.71.0"
 version = "0.1.0-dev"
+edition = "2021"
+rust-version = "1.71.0"
+documentation = "https://docs.rs/vlcb-defs"
+homepage = "https://github.com/0xfrej/vlcb-defs-rs"
+repository = "https://github.com/0xfrej/vlcb-defs-rs"
+license = "Apache-2"
+authors = [ "Freja <me@freja.codes>" ]
+keywords = [ "lcb", "vlcb", "cbus", "merg" ]
+exclude = [ "/codegen", "Makefile" ]
+
+[features]
+defmt = [ "dep:defmt" ]

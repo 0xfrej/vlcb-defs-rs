@@ -5,3 +5,7 @@ generate: clean
 .PHONY: clean
 clean:
 	rm -f ${ROOT_DIR}/src/generated.rs
+
+.PHONY: install
+install:
+	bundle install

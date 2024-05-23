@@ -2,7 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     bigdecimal (3.1.8)
-    citrus (3.0.2)
     concurrent-ruby (1.2.3)
     dry-configurable (1.1.0)
       dry-core (~> 1.0, < 2)
@@ -37,11 +36,9 @@ GEM
       dry-initializer (~> 3.0)
       dry-schema (>= 1.12, < 2)
       zeitwerk (~> 2.6)
-    racc (1.8.0)
     semverse (3.0.2)
-    toml-rb (3.0.1)
-      citrus (~> 3.0, > 3.0)
-      racc (~> 1.7)
+    tomlib (0.7.2)
+      bigdecimal
     yaml (0.3.0)
     zeitwerk (2.6.14)
 
@@ -53,7 +50,7 @@ DEPENDENCIES
   dry-types
   dry-validation
   semverse
-  toml-rb
+  tomlib
   yaml
 
 BUNDLED WITH
