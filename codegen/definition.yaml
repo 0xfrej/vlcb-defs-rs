@@ -1,34 +1,27 @@
-version: 0.1.0-dev
+version: 0.1.0-alpha.1
+extern:
+  cbusdefs:
+    format: CbusDefsCsv
+    path: defs/cbusdefs.csv
 spec:
   - type: Enum
-    identifier: CbusArmProcessors
+    identifier: ArmProcessor
     data_type: u8
     comments: |
       ARM Processor type codes (used by FCU to identify correct bootloader compatibility)
-    body:
-      - identifier: Arm1176JzfS
-        value: 1
-        comments: As used in Raspberry Pi
-      - identifier: CortexA7
-        value: 2
-        comments: As Used in Raspberry Pi 2
-      - identifier: CortexA53
-        value: 3
-        comments: As used in Raspberry Pi 3
+    bodyFrom:
+      extern:
+        location: cbusdefs
+        target: CbusArmProcessors
   - type: Enum
-    identifier: CbusBusTypes
+    identifier: BusType
     data_type: u8
     comments: |
       BUS type that module is connected to
-    body:
-      - identifier: CAN
-        value: 1
-      - identifier: Ethernet
-        value: 2
-      - identifier: MiWi
-        value: 3
-      - identifier: USB
-        value: 4
+    bodyFrom:
+      extern:
+        location: cbusdefs
+        target: CbusBusTypes
   - type: Enum
     identifier: CbusCabDatOpcode
     data_type: u8

@@ -16,7 +16,7 @@ optional = true
 
 [package]
 name = "vlcb-defs"
-version = "0.1.0-dev"
+version = "0.1.0-alpha.1"
 edition = "2021"
 rust-version = "1.71.0"
 documentation = "https://docs.rs/vlcb-defs"
@@ -25,7 +25,7 @@ repository = "https://github.com/0xfrej/vlcb-defs-rs"
 license = "Apache-2"
 authors = [ "Freja <me@freja.codes>" ]
 keywords = [ "lcb", "vlcb", "cbus", "merg" ]
-exclude = [ "/codegen", "Makefile" ]
+exclude = [ "/codegen", "/Makefile", "/defs" ]
 
 [features]
 defmt = [ "dep:defmt" ]
