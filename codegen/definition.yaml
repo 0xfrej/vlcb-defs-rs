@@ -1,43 +1,138 @@
 version: 0.1.0-alpha.1
-extern:
-  cbusdefs:
-    format: CbusDefsCsv
-    path: defs/cbusdefs.csv
 spec:
+  - type: Enum
+    identifier: ProcessorManufacturer
+    data_type: u8
+    comments: |
+      Processor manufacturer codes
+    body:
+      - identifier: Microchip
+        value: 1
+      - identifier: Atmel
+        value: 2
+      - identifier: Arm
+        value: 3
   - type: Enum
     identifier: ArmProcessor
     data_type: u8
     comments: |
       ARM Processor type codes (used by FCU to identify correct bootloader compatibility)
-    bodyFrom:
-      extern:
-        location: cbusdefs
-        target: CbusArmProcessors
+    body:
+      - identifier: Arm1176JzfS
+        value: 1
+      - identifier: CortexA7
+        value: 2
+      - identifier: CortexA53
+        value: 3
+  - type: Enum
+    identifier: MicrochipProcessor
+    data_type: u8
+    comments: |
+      Microchip Processor type codes (used by FCU to identify correct bootloader compatibility)
+    body:
+      - identifier: P18F2480
+        value: 1
+      - identifier: P18F4480
+        value: 2
+      - identifier: P18F2580
+        value: 3
+      - identifier: P18F4580
+        value: 4
+      - identifier: P18F2585
+        value: 5
+      - identifier: P18F4585
+        value: 6
+      - identifier: P18F2680
+        value: 7
+      - identifier: P18F4680
+        value: 8
+      - identifier: P18F2682
+        value: 9
+      - identifier: P18F4682
+        value: 10
+      - identifier: P18F2685
+        value: 11
+      - identifier: P18F4685
+        value: 12
+      - identifier: P18F25K80
+        value: 13
+      - identifier: P18F45K80
+        value: 14
+      - identifier: P18F26K80
+        value: 15
+      - identifier: P18F46K80
+        value: 16
+      - identifier: P18F65K80
+        value: 17
+      - identifier: P18F66K80
+        value: 18
+      - identifier: P18F25K83
+        value: 19
+      - identifier: P18F26K83
+        value: 20
+      - identifier: P18F27Q84
+        value: 21
+      - identifier: P18F47Q84
+        value: 22
+      - identifier: P18F27Q83
+        value: 23
+      - identifier: P18F14K22
+        value: 25
+      - identifier: P32MX534F064
+        value: 30
+      - identifier: P32MX564F064
+        value: 31
+      - identifier: P32MX564F128
+        value: 32
+      - identifier: P32MX575F256
+        value: 33
+      - identifier: P32MX575F512
+        value: 34
+      - identifier: P32MX764F128
+        value: 35
+      - identifier: P32MX775F256
+        value: 36
+      - identifier: P32MX775F512
+        value: 37
+      - identifier: P32MX795F512
+        value: 38
   - type: Enum
     identifier: BusType
     data_type: u8
     comments: |
       BUS type that module is connected to
-    bodyFrom:
-      extern:
-        location: cbusdefs
-        target: CbusBusTypes
-  - type: Enum
-    identifier: CbusCabDatOpcode
-    data_type: u8
-    comments: |
-      Sub opcodes for OPC_CABDAT
     body:
-      - identifier: CABSIG
+      - identifier: CAN
         value: 1
+      - identifier: Ethernet
+        value: 2
+      - identifier: MiWi
+        value: 3
+      - identifier: USB
+        value: 4
   - type: Enum
-    #todo: these are probably flags
-    identifier: CbusCabSigAspect1
+    identifier: CabDataCode
     data_type: u8
     comments: |
-      Aspect codes for CDAT_CABSIG
+      Defines the meaning of the remaining 3 bytes of the CABDAT message
+    body:
+      - identifier: CabSignalling
+        value: 1
+        comments: |
+          CABSIG
+          Transmitted by a layout control system to send
+          signal aspects to be displayed on a cab handset as cab
+          signalling.
+  - type: Enum
+    #todo: these are probably flags figure the values from docs
+    identifier: CabSignallingAspect1
+    data_type: u8
+    comments: |
+      Aspect codes for the first aspect byte of the CABDAT message
 
-      First aspect byte
+      Colours in brackets correspond to UK colour light
+      signalling, the given aspect names may be displayed differently
+      in other signalling systems
     body:
       - identifier: Danger
         value: 0
@@ -53,26 +148,26 @@ spec:
       - identifier: Theatre
         value: 8
         comments: Set bit 3 to 0 for upper nibble is feather location, set 1 for upper nibble is theatre code
-  - type: Enum
-    #todo: these are probably flags
-    identifier: CbusCabSigAspect2
-    data_type: u8
-    comments: |
-      Aspect codes for CDAT_CABSIG
+  # - type: Enum
+  #   #todo: these are probably flags
+  #   identifier: CbusCabSigAspect2
+  #   data_type: u8
+  #   comments: |
+  #     Aspect codes for CDAT_CABSIG
 
-      Second Aspect byte
-    body:
-      - identifier: Lit
-        value: 0
-        comments: Set bit 0 to indicate lit
-      - identifier: Lunar
-        value: 1
-        comments: Set bit 1 for lunar indication
+  #     Second Aspect byte
+  #   body:
+  #     - identifier: Lit
+  #       value: 0
+  #       comments: Set bit 0 to indicate lit
+  #     - identifier: Lunar
+  #       value: 1
+  #       comments: Set bit 1 for lunar indication
   - type: Enum
-    identifier: CbusCmdErrs
+    identifier: CommandError
     data_type: u8
     comments: |
-      Error codes for OPC_CMDERR
+      Error codes for CMDERR message
     body:
       - identifier: InvalidCommand
         value: 1
@@ -120,10 +215,10 @@ spec:
 
           Sent when module in learn mode sees NNLRN for different module (also exits learn mode)
   - type: Enum
-    identifier: CbusErrs
+    identifier: DccError
     data_type: u8
     comments: |
-      Error codes for OPC_ERR
+      Error codes for ERR message
     body:
       - identifier: LocoStackIsFull
         value: 1
@@ -142,7 +237,7 @@ spec:
       - identifier: SessionWasCancelled
         value: 8
   - type: Enum
-    identifier: CbusManufacturer
+    identifier: Manufacturer
     data_type: u8
     comments: |
       Manufacturer definitions
@@ -180,7 +275,7 @@ spec:
         value: 248
         comments: http://rmeuk.com  (Railway Modelling Experts Limited)
   - type: Enum
-    identifier: CbusMergModuleTypes
+    identifier: MergModuleType
     data_type: u8
     comments: |
       MERG Module types
@@ -460,518 +555,17 @@ spec:
       #   value: 0xFC
       #   comments: Module type for use by developers when developing something new
   - type: Enum
-    identifier: CbusMicrochipProcessors
+    identifier: OpCode
     data_type: u8
     comments: |
-      Microchip Processor type codes (used by FCU to identify correct bootloader compatibility)
+      VLCB opcodes
     body:
-      - identifier: P18F2480
-        value: 1
-      - identifier: P18F4480
-        value: 2
-      - identifier: P18F2580
-        value: 3
-      - identifier: P18F4580
-        value: 4
-      - identifier: P18F2585
-        value: 5
-      - identifier: P18F4585
-        value: 6
-      - identifier: P18F2680
-        value: 7
-      - identifier: P18F4680
-        value: 8
-      - identifier: P18F2682
-        value: 9
-      - identifier: P18F4682
-        value: 10
-      - identifier: P18F2685
-        value: 11
-      - identifier: P18F4685
-        value: 12
-      - identifier: P18F25K80
-        value: 13
-      - identifier: P18F45K80
-        value: 14
-      - identifier: P18F26K80
-        value: 15
-      - identifier: P18F46K80
-        value: 16
-      - identifier: P18F65K80
-        value: 17
-      - identifier: P18F66K80
-        value: 18
-      - identifier: P18F25K83
-        value: 19
-      - identifier: P18F26K83
-        value: 20
-      - identifier: P18F27Q84
-        value: 21
-      - identifier: P18F47Q84
-        value: 22
-      - identifier: P18F27Q83
-        value: 23
-      - identifier: P18F14K22
-        value: 25
-      - identifier: P32MX534F064
-        value: 30
-      - identifier: P32MX564F064
-        value: 31
-      - identifier: P32MX564F128
-        value: 32
-      - identifier: P32MX575F256
-        value: 33
-      - identifier: P32MX575F512
-        value: 34
-      - identifier: P32MX764F128
-        value: 35
-      - identifier: P32MX775F256
-        value: 36
-      - identifier: P32MX775F512
-        value: 37
-      - identifier: P32MX795F512
-        value: 38
-  - type: Enum
-    identifier: CbusOpCodes
-    data_type: u8
-    comments: |
-      VLCB opcodes list
-      Packets with no data bytes
-    body:
-      - identifier: ACK
-        value: 0x00
-        comments: General ack
-      - identifier: NAK
-        value: 0x01
-        comments: General nak
-      - identifier: HLT
-        value: 0x02
-        comments: Bus Halt
-      - identifier: BON
-        value: 0x03
-        comments: Bus on
-      - identifier: TOF
-        value: 0x04
-        comments: Track off
-      - identifier: TON
-        value: 0x05
-        comments: Track on
-      - identifier: ESTOP
-        value: 0x06
-        comments: Track stopped
-      - identifier: ARST
-        value: 0x07
-        comments: System reset
-      - identifier: RTOF
-        value: 0x08
-        comments: Request track off
-      - identifier: RTON
-        value: 0x09
-        comments: Request track on
-      - identifier: RESTP
-        value: 0x0a
-        comments: Request emergency stop all
-      - identifier: RSTAT
-        value: 0x0c
-        comments: Request node status
-      - identifier: QNN
-        value: 0x0d
-        comments: Query nodes
-      - identifier: RQNP
-        value: 0x10
-        comments: Read node parameters
-      - identifier: RQMN
-        value: 0x11
-        comments: Request name of module type
-      - identifier: KLOC
-        value: 0x21
-        comments: Release engine by handle
-      - identifier: QLOC
-        value: 0x22
-        comments: Query engine by handle
-      - identifier: DKEEP
-        value: 0x23
-        comments: Keep alive for cab
-      - identifier: DBG1
-        value: 0x30
-        comments: Debug message with 1 status byte
-      - identifier: EXTC
-        value: 0x3F
-        comments: Extended opcode
-      - identifier: RLOC
-        value: 0x40
-        comments: Request session for loco
-      - identifier: QCON
-        value: 0x41
-        comments: Query consist
-      - identifier: SNN
-        value: 0x42
-        comments: Set node number
-      - identifier: ALOC
-        value: 0x43
-        comments: Allocate loco (used to allocate to a shuttle in cancmd)
-      - identifier: STMOD
-        value: 0x44
-        comments: Set Throttle mode
-      - identifier: PCON
-        value: 0x45
-        comments: Consist loco
-      - identifier: KCON
-        value: 0x46
-        comments: De-consist loco
-      - identifier: DSPD
-        value: 0x47
-        comments: Loco speed/dir
-      - identifier: DFLG
-        value: 0x48
-        comments: Set engine flags
-      - identifier: DFNON
-        value: 0x49
-        comments: Loco function on
-      - identifier: DFNOF
-        value: 0x4A
-        comments: Loco function off
-      - identifier: SSTAT
-        value: 0x4C
-        comments: Service mode status
-      - identifier: NNRSM
-        value: 0x4F
-        comments: Reset to manufacturer's defaults
-      - identifier: RQNN
-        value: 0x50
-        comments: Request Node number in setup mode
-      - identifier: NNREL
-        value: 0x51
-        comments: Node number release
-      - identifier: NNACK
-        value: 0x52
-        comments: Node number acknowledge
-      - identifier: NNLRN
-        value: 0x53
-        comments: Set learn mode
-      - identifier: NNULN
-        value: 0x54
-        comments: Release learn mode
-      - identifier: NNCLR
-        value: 0x55
-        comments: Clear all events
-      - identifier: NNEVN
-        value: 0x56
-        comments: Read available event slots
-      - identifier: NERD
-        value: 0x57
-        comments: Read all stored events
-      - identifier: RQEVN
-        value: 0x58
-        comments: Read number of stored events
-      - identifier: WRACK
-        value: 0x59
-        comments: Write acknowledge
-      - identifier: RQDAT
-        value: 0x5A
-        comments: Request node data event
-      - identifier: RQDDS
-        value: 0x5B
-        comments: Request short data frame
-      - identifier: BOOT
-        value: 0x5C
-        comments: Put node into boot mode
-      - identifier: ENUM
-        value: 0x5D
-        comments: Force can_id self enumeration
-      - identifier: NNRST
-        value: 0x5E
-        comments: Reset node (as in restart)
-      - identifier: EXTC1
-        value: 0x5F
-        comments: Extended opcode with 1 data byte
-      - identifier: DFUN
-        value: 0x60
-        comments: Set engine functions
-      - identifier: GLOC
-        value: 0x61
-        comments: Get loco (with support for steal/share)
-      - identifier: ERR
-        value: 0x63
-        comments: Command station error
-      - identifier: CMDERR
-        value: 0x6F
-        comments: Errors from nodes during config
-      - identifier: EVNLF
-        value: 0x70
-        comments: Event slots left response
-      - identifier: NVRD
-        value: 0x71
-        comments: Request read of node variable
-      - identifier: NENRD
-        value: 0x72
-        comments: Request read stored event by index
-      - identifier: RQNPN
-        value: 0x73
-        comments: Request read module parameters
-      - identifier: NUMEV
-        value: 0x74
-        comments: Number of events stored response
-      - identifier: CANID
-        value: 0x75
-        comments: Set canid
-      - identifier: MODE
-        value: 0x76
-        comments: Set mode
-      - identifier: RQSD
-        value: 0x78
-        comments: Request service discovery
-      - identifier: EXTC2
-        value: 0x7F
-        comments: Extended opcode with 2 data bytes
-      - identifier: RDCC3
-        value: 0x80
-        comments: 3 byte DCC packet
-      - identifier: WCVO
-        value: 0x82
-        comments: Write CV byte Ops mode by handle
-      - identifier: WCVB
-        value: 0x83
-        comments: Write CV bit Ops mode by handle
-      - identifier: QCVS
-        value: 0x84
-        comments: Read CV
-      - identifier: PCVS
-        value: 0x85
-        comments: Report CV
-      - identifier: RDGN
-        value: 0x87
-        comments: Request diagnostics
-      - identifier: NVSETRD
-        value: 0x8E
-        comments: Set NV with Read
-      - identifier: ACON
-        value: 0x90
-        comments: on event
-      - identifier: ACOF
-        value: 0x91
-        comments: off event
-      - identifier: AREQ
-        value: 0x92
-        comments: Accessory Request event
-      - identifier: ARON
-        value: 0x93
-        comments: Accessory response event on
-      - identifier: AROF
-        value: 0x94
-        comments: Accessory response event off
-      - identifier: EVULN
-        value: 0x95
-        comments: Unlearn event
-      - identifier: NVSET
-        value: 0x96
-        comments: Set a node variable
-      - identifier: NVANS
-        value: 0x97
-        comments: Node variable value response
-      - identifier: ASON
-        value: 0x98
-        comments: Short event on
-      - identifier: ASOF
-        value: 0x99
-        comments: Short event off
-      - identifier: ASRQ
-        value: 0x9A
-        comments: Short Request event
-      - identifier: PARAN
-        value: 0x9B
-        comments: Single node parameter response
-      - identifier: REVAL
-        value: 0x9C
-        comments: Request read of event variable
-      - identifier: ARSON
-        value: 0x9D
-        comments: Accessory short response on event
-      - identifier: ARSOF
-        value: 0x9E
-        comments: Accessory short response off event
-      - identifier: EXTC3
-        value: 0x9F
-        comments: Extended opcode with 3 data bytes
-      - identifier: RDCC4
-        value: 0xA0
-        comments: 4 byte DCC packet
-      - identifier: WCVS
-        value: 0xA2
-        comments: Write CV service mode
-      - identifier: HEARTB
-        value: 0xAB
-        comments: Heartbeat
-      - identifier: SD
-        value: 0xAC
-        comments: Service discovery response
-      - identifier: GRSP
-        value: 0xAF
-        comments: General response
-      - identifier: ACON1
-        value: 0xB0
-        comments: On event with one data byte
-      - identifier: ACOF1
-        value: 0xB1
-        comments: Off event with one data byte
-      - identifier: REQEV
-        value: 0xB2
-        comments: Read event variable in learn mode
-      - identifier: ARON1
-        value: 0xB3
-        comments: Accessory on response (1 data byte)
-      - identifier: AROF1
-        value: 0xB4
-        comments: Accessory off response (1 data byte)
-      - identifier: NEVAL
-        value: 0xB5
-        comments: Event variable by index read response
-      - identifier: PNN
-        value: 0xB6
-        comments: Response to QNN
-      - identifier: ASON1
-        value: 0xB8
-        comments: Accessory short on with 1 data byte
-      - identifier: ASOF1
-        value: 0xB9
-        comments: Accessory short off with 1 data byte
-      - identifier: ARSON1
-        value: 0xBD
-        comments: Short response event on with one data byte
-      - identifier: ARSOF1
-        value: 0xBE
-        comments: Short response event off with one data byte
-      - identifier: EXTC4
-        value: 0xBF
-        comments: Extended opcode with 4 data bytes
-      - identifier: RDCC5
-        value: 0xC0
-        comments: 5 byte DCC packet
-      - identifier: WCVOA
-        value: 0xC1
-        comments: Write CV ops mode by address
-      - identifier: CABDAT
-        value: 0xC2
-        comments: Cab data (cab signalling)
-      - identifier: DGN
-        value: 0xC7
-        comments: Diagnostics
-      - identifier: FCLK
-        value: 0xCF
-        comments: Fast clock
-      - identifier: ACON2
-        value: 0xD0
-        comments: On event with two data bytes
-      - identifier: ACOF2
-        value: 0xD1
-        comments: Off event with two data bytes
-      - identifier: EVLRN
-        value: 0xd2
-        comments: Teach event
-      - identifier: EVANS
-        value: 0xd3
-        comments: Event variable read response in learn mode
-      - identifier: ARON2
-        value: 0xD4
-        comments: Accessory on response
-      - identifier: AROF2
-        value: 0xD5
-        comments: Accessory off response
-      - identifier: ASON2
-        value: 0xD8
-        comments: Accessory short on with 2 data bytes
-      - identifier: ASOF2
-        value: 0xD9
-        comments: Accessory short off with 2 data bytes
-      - identifier: ARSON2
-        value: 0xDD
-        comments: Short response event on with two data bytes
-      - identifier: ARSOF2
-        value: 0xDE
-        comments: Short response event off with two data bytes
-      - identifier: EXTC5
-        value: 0xDF
-        comments: Extended opcode with 5 data bytes
-      - identifier: RDCC6
-        value: 0xE0
-        comments: 6 byte DCC packets
-      - identifier: PLOC
-        value: 0xE1
-        comments: Loco session report
-      - identifier: NAME
-        value: 0xE2
-        comments: Module name response
-      - identifier: STAT
-        value: 0xE3
-        comments: Command station status report
-      - identifier: ENACK
-        value: 0xE6
-        comments: Event Acknowledge
-      - identifier: ESD
-        value: 0xE7
-        comments: Extended service discovery
-      - identifier: DTXC
-        value: 0xE9
-        comments: Long message packet
-      - identifier: PARAMS
-        value: 0xEF
-        comments: Node parameters response
-      - identifier: ACON3
-        value: 0xF0
-        comments: On event with 3 data bytes
-      - identifier: ACOF3
-        value: 0xF1
-        comments: Off event with 3 data bytes
-      - identifier: ENRSP
-        value: 0xF2
-        comments: Read node events response
-      - identifier: ARON3
-        value: 0xF3
-        comments: Accessory on response
-      - identifier: AROF3
-        value: 0xF4
-        comments: Accessory off response
-      - identifier: EVLRNI
-        value: 0xF5
-        comments: Teach event using event indexing
-      - identifier: ACDAT
-        value: 0xF6
-        comments: "Accessory data event: 5 bytes of node data (eg: RFID)"
-      - identifier: ARDAT
-        value: 0xF7
-        comments: Accessory data response
-      - identifier: ASON3
-        value: 0xF8
-        comments: Accessory short on with 3 data bytes
-      - identifier: ASOF3
-        value: 0xF9
-        comments: Accessory short off with 3 data bytes
-      - identifier: DDES
-        value: 0xFA
-        comments: Short data frame aka device data event (device id plus 5 data bytes)
-      - identifier: DDRS
-        value: 0xFB
-        comments: Short data frame response aka device data response
-      - identifier: DDWS
-        value: 0xFC
-        comments: Device Data Write Short
-      - identifier: ARSON3
-        value: 0xFD
-        comments: Short response event on with 3 data bytes
-      - identifier: ARSOF3
-        value: 0xFE
-        comments: Short response event off with 3 data bytes
-      - identifier: EXTC6
-        value: 0xFF
-        comments: Extended opcode with 6 data byes
-      - identifier: VCVS
-        value: 0xA4
-        comments: Verify CV service mode - used for CV read hints
+      #todo: copy stuff with comments from the docs
   - type: Flags
-    identifier: CbusParamFlags
+    identifier: ModuleFlags
     data_type: u8
     comments: |
-      Flags in PAR_FLAGS
+      Flags in node parameter FLAGS
     body:
       #todo: these are flags though i have to figure out if the values are bits or actual masks
       - identifier: EventsUnsupported
@@ -1026,7 +620,7 @@ spec:
         value: 0x1E
         comments: Checksum word at end of parameters
   - type: Enum
-    identifier: CbusParams
+    identifier: ModuleParams
     data_type: u8
     comments: |
       Parameter index numbers (readable by OPC_RQNPN, returned in OPC_PARAN)
@@ -1079,19 +673,7 @@ spec:
         value: 20
         comments: Beta revision (numeric), or 0 if release
   - type: Enum
-    identifier: CbusProcessorManufacturers
-    data_type: u8
-    comments: |
-      Processor manufacturer codes
-    body:
-      - identifier: Microchip
-        value: 1
-      - identifier: Atmel
-        value: 2
-      - identifier: Arm
-        value: 3
-  - type: Enum
-    identifier: CbusRocRailModuleTypes
+    identifier: RocRailModuleType
     data_type: u8
     comments: |
       Rocrail Module types
@@ -1121,7 +703,7 @@ spec:
         value: 11
         comments: CAN<->Ethernet interface
   - type: Enum
-    identifier: CbusSpectrumModuleTypes
+    identifier: SpectrumModuleType
     data_type: u8
     comments: |
       Spectrum Engineering Animated Modeller module types
@@ -1133,7 +715,7 @@ spec:
         value: 2
         comments: Dual cab based on cancab
   - type: Enum
-    identifier: CbusSprogModuleTypes
+    identifier: SprogModuleType
     data_type: u8
     comments: |
       Sprog Module types
@@ -1166,10 +748,10 @@ spec:
         value: 101
         comments: 8-channel (4-pairs) Solenoid I/O module
   - type: Enum
-    identifier: CbusSStats
+    identifier: DccServiceModeStatus
     data_type: u8
     comments: |
-      Status codes for OPC_SSTAT
+      Status codes for SSTAT message
     body:
       - identifier: NoAck
         value: 1
@@ -1182,7 +764,7 @@ spec:
       - identifier: CvError
         value: 5
   - type: Enum
-    identifier: CbusStmodModes
+    identifier: DccCabSessionMode
     data_type: u8
     comments: |
       Modes for STMOD
@@ -1202,7 +784,7 @@ spec:
         value: 3
         comments: "28-step speed mode"
   - type: Enum
-    identifier: CbusSysPixieModuleTypes
+    identifier: SysPixieModuleType
     data_type: u8
     comments: |
       SysPixie Module types (Konrad Orlowski)
@@ -1211,7 +793,7 @@ spec:
         value: 1
         comments: Motorised point motor driver with current sense
   - type: Enum
-    identifier: VlcbGrspCodes
+    identifier: GenericResponseStatus
     data_type: u8
     comments: |
       GRSP codes
@@ -1235,7 +817,7 @@ spec:
         value: 250
         comments: Invalid Mode
   - type: Enum
-    identifier: VlcbModeParams
+    identifier: ModuleMode
     data_type: u8
     comments: |
       Parameters to the MODE op-code
@@ -1275,7 +857,7 @@ spec:
         value: 0x0E
         comments: PIC Boot loader mode
   - type: Enum
-    identifier: VlcbServiceTypes
+    identifier: ServiceType
     data_type: u8
     comments: |
       VLCB Service Types
