@@ -30,7 +30,7 @@ body:
   value: 2
   commentsFrom: docs/opcode/hlt.md
 
-- identifier: BusOn
+- identifier: BusResume
   comments: |-
     Bus ON
 
@@ -132,7 +132,7 @@ body:
   value: 17
   commentsFrom: docs/opcode/rqmn.md
 
-- identifier: DccReleaseLoco
+- identifier: DccReleaseSession
   comments: |-
     Release Engine.
 
@@ -140,7 +140,7 @@ body:
   value: 33
   commentsFrom: docs/opcode/kloc.md
 
-- identifier: DccQueryLoco
+- identifier: DccQueryLocoStatus
   comments: |-
     Query engine.
 
@@ -165,14 +165,14 @@ body:
   value: 48
   commentsFrom: docs/opcode/dbg1.md
 
-- identifier: ExtOpcode
+- identifier: ExtOpCode
   comments: |-
     Extended opcode with zero additional bytes.
     Reserved to allow the 0 additional bytes range to be extended by a further 256 opcodes.
   value: 63
   commentsFrom: docs/opcode/extc.md
 
-- identifier: DccQueryEngineSession
+- identifier: DccRequestNewSession
   comments: |-
     Request engine session.
 
@@ -202,7 +202,7 @@ body:
   value: 67
   commentsFrom: docs/opcode/aloc.md
 
-- identifier: DccSetCabSessionMode
+- identifier: DccSetThrottleMode
   comments: |-
     Set CAB session mode.
 
@@ -253,7 +253,7 @@ body:
   value: 72
   commentsFrom: docs/opcode/dflg.md
 
-- identifier: DccSetLocoFunctionOn
+- identifier: DccLocoFunctionOn
   comments: |-
     Set Engine function on.
 
@@ -262,7 +262,7 @@ body:
   value: 73
   commentsFrom: docs/opcode/dfnon.md
 
-- identifier: DccSetLocoFunctionOff
+- identifier: DccLocoFunctionOff
   comments: |-
     Set Engine function off.
 
@@ -331,7 +331,7 @@ body:
   commentsFrom: docs/opcode/nnuln.md
   deprecated: "Replaced by MODE in VLCB"
 
-- identifier: ClearLearnedEvents
+- identifier: ForgetAllLearnedEvents
   comments: |-
     Clear all events from a node.
 
@@ -348,7 +348,7 @@ body:
   value: 86
   commentsFrom: docs/opcode/nnevn.md
 
-- identifier: QueryLearnedEvents
+- identifier: QueryAllLearnedEvents
   comments: |-
     Read back all stored events in a node.
 
@@ -376,7 +376,7 @@ body:
   commentsFrom: docs/opcode/wrack.md
   deprecated: "Replaced by GRSP in VLCB"
 
-- identifier: RequestNodeDataEvent
+- identifier: QueryNodeData
   comments: |-
     Request node data event.
 
@@ -392,7 +392,7 @@ body:
   value: 91
   commentsFrom: docs/opcode/rqdds.md
 
-- identifier: PutNodeIntoBootMode
+- identifier: RebootIntoBootloader
   comments: |-
     Put node into bootloading mode.
     For modules with no NN then the NN of the command must be zero. For nodes in Normal mode the command must contain the NN of the target node. Sent by a configuration tool to prepare for loading a new program.
@@ -419,7 +419,7 @@ body:
   value: 94
   commentsFrom: docs/opcode/nnrst.md
 
-- identifier: ExtOpcode1
+- identifier: ExtOpCode1
   comments: |-
     Extended opcode with 1 additional byte.
 
@@ -443,7 +443,7 @@ body:
   value: 97
   commentsFrom: docs/opcode/gloc.md
 
-- identifier: DccCommandStationErrorReport
+- identifier: DccCommandStationError
   comments: |-
     Command Station Error report.
 
@@ -469,7 +469,7 @@ body:
   value: 112
   commentsFrom: docs/opcode/evnlf.md
 
-- identifier: ReadNodeVariable
+- identifier: QueryNodeVariable
   comments: |-
     Request read of a node variable.
 
@@ -478,7 +478,7 @@ body:
   value: 113
   commentsFrom: docs/opcode/nvrd.md
 
-- identifier: ReadLearnedEventByIndex
+- identifier: QueryLearnedEventByIndex
   comments: |-
     Request read of stored event by event index.
 
@@ -486,7 +486,7 @@ body:
   value: 114
   commentsFrom: docs/opcode/nenrd.md
 
-- identifier: ReadNodeParameterByIndex
+- identifier: QueryNodeParameterByIndex
   comments: |-
     Request read of a node parameter by index.
 
@@ -527,6 +527,15 @@ body:
     If the ServiceIndex is zero then the module responds with a SD
   value: 120
   commentsFrom: docs/opcode/rqsd.md
+
+- identifier: ExtOpCode2
+  comments: |-
+    Extended opcode with 2 additional bytes.
+
+    Reserved to allow the 2 additional bytes range to be extended by a
+    further 256 opcodes.
+  value: 127
+  commentsFrom: docs/opcode/extc2.md
 
 - identifier: DccSendRawPacket3
   comments: |-
@@ -626,7 +635,7 @@ body:
   value: 148
   commentsFrom: docs/opcode/arof.md
 
-- identifier: RemoveLearnedEvent
+- identifier: ForgetLearnedEvent
   comments: |-
     Unlearn an event in learn mode.
 
@@ -707,7 +716,7 @@ body:
   value: 158
   commentsFrom: docs/opcode/arsof.md
 
-- identifier: ExtOpcode3
+- identifier: ExtOpCode3
   comments: |-
     Extended opcode with 3 additional bytes.
     Reserved to allow the 3 additional bytes range to be extended by a further 256 opcodes.
@@ -838,7 +847,7 @@ body:
   value: 190
   commentsFrom: docs/opcode/arsof1.md
 
-- identifier: ExtOpcode4
+- identifier: ExtOpCode4
   comments: |-
     Extended opcode with 4 additional bytes.
     Reserved to allow the 4 additional bytes range to be extended by a further 256 opcodes.
@@ -900,7 +909,7 @@ body:
   value: 209
   commentsFrom: docs/opcode/acof2.md
 
-- identifier: TeachEventInLearnMode
+- identifier: TeachEvent
   comments: |-
     Teach an event in learn mode.
 
@@ -962,7 +971,7 @@ body:
   value: 222
   commentsFrom: docs/opcode/arsof2.md
 
-- identifier: ExtOpcode5
+- identifier: ExtOpCode5
   comments: |-
     Extended opcode with 5 additional bytes.
 
@@ -1074,7 +1083,7 @@ body:
   value: 244
   commentsFrom: docs/opcode/arof3.md
 
-- identifier: TeachEventInLearnModeByIndex
+- identifier: TeachEventByIndex
   comments: |-
     Teach an event in learn mode using event indexing.
 
@@ -1154,7 +1163,7 @@ body:
   value: 254
   commentsFrom: docs/opcode/arsof3.md
 
-- identifier: ExtOpcode6
+- identifier: ExtOpCode6
   comments: |-
     Extended opcode with 6 additional bytes.
 

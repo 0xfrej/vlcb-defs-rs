@@ -1,4 +1,4 @@
-version: 0.1.0-alpha.1
+version: 0.1.0-alpha.2
 spec:
   - type: Enum
     identifier: ProcessorManufacturer
@@ -594,24 +594,24 @@ spec:
       - identifier: ServiceDiscovery
         value: 64
         comments: Module supports Service Discovery (Deprecated in favour of PF_VLCB.)
-  - type: Enum
-    identifier: CbusParamOffsetsPic
-    data_type: u8
-    #todo: this is not an enum
-    comments: |
-      Offsets to other values stored at the top of the parameter block.
-      These are not returned by opcode PARAN, but are present in the hex
-      file for FCU.
-    body:
-      - identifier: COUNT
-        value: 0x18
-        comments: Number of parameters implemented
-      - identifier: NAME
-        value: 0x1A
-        comments: 4 byte Address of Module type name, up to 8 characters null terminated
-      - identifier: CKSUM
-        value: 0x1E
-        comments: Checksum word at end of parameters
+  # - type: Enum
+  #   identifier: CbusParamOffsetsPic
+  #   data_type: u8
+  #   #todo: this is not an enum
+  #   comments: |
+  #     Offsets to other values stored at the top of the parameter block.
+  #     These are not returned by opcode PARAN, but are present in the hex
+  #     file for FCU.
+  #   body:
+  #     - identifier: COUNT
+  #       value: 0x18
+  #       comments: Number of parameters implemented
+  #     - identifier: NAME
+  #       value: 0x1A
+  #       comments: 4 byte Address of Module type name, up to 8 characters null terminated
+  #     - identifier: CKSUM
+  #       value: 0x1E
+  #       comments: Checksum word at end of parameters
   - type: Enum
     identifier: ModuleParams
     data_type: u8
@@ -757,7 +757,7 @@ spec:
       - identifier: CvError
         value: 5
   - type: Enum
-    identifier: DccCabSessionMode
+    identifier: DccThrottleMode
     data_type: u8
     comments: |
       Modes for STMOD
@@ -819,9 +819,10 @@ spec:
     body:
     #todo: we should figure out how to separate these for better API definition as the opcode can use those turn on/off ones, etc but can't' say that the mode is suddenly in setup mode
     #   verify this but i think it was like that
-      - identifier: Uninitialised
+      - identifier: Uninitialized
         value: 0xFF
-        comments: Uninitialised / factory settings
+        comments: Uninitialized / factory settings
+        is_default: true
       - identifier: InSetup
         value: 0
         comments: Set up mode

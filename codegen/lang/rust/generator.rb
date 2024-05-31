@@ -100,7 +100,7 @@ def gen_enum(ctx, renderer, enum)
   end
 
   enum[:annotations] = [
-    "derive(Debug, Copy, Clone, TryFromPrimitive, UnsafeFromPrimitive, IntoPrimitive, Eq, PartialEq#{", " if extra_derives.empty?}#{extra_derives.join(', ')})",
+    "derive(Debug, Copy, Clone, UnsafeFromPrimitive, IntoPrimitive, Eq, PartialEq, #{"TryFromPrimitive" if extra_derives.empty?}#{extra_derives.join(', ')})",
     'cfg_attr(feature = "defmt", derive(defmt::Format))',
     "repr(#{enum[:data_type]})",
   ]

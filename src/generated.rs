@@ -2,16 +2,17 @@ use num_enum::IntoPrimitive;
 use num_enum::TryFromPrimitive;
 use num_enum::UnsafeFromPrimitive;
 use bitflags::bitflags;
+use num_enum::FromPrimitive;
 /// VLCB opcodes
 #[derive(
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -37,7 +38,7 @@ pub enum OpCode {
     /// Commonly broadcasted to all nodes to indicate CBUS is available after a HLT
     /// message was transmitted.
     #[doc = include_str!("../docs/opcode/bon.md")]
-    BusOn = 3,
+    BusResume = 3,
     /// DCC track off.
     ///
     /// Commonly broadcasted to all nodes by a command station to indicate track power is off
@@ -102,12 +103,12 @@ pub enum OpCode {
     ///
     /// Sent by a CAB to the Command Station. The engine with that Session number is removed from the active engine list.
     #[doc = include_str!("../docs/opcode/kloc.md")]
-    DccReleaseLoco = 33,
+    DccReleaseSession = 33,
     /// Query engine.
     ///
     /// Used to determine if the command station session is valid and to obtain information about the status of the locomotive.
     #[doc = include_str!("../docs/opcode/qloc.md")]
-    DccQueryLoco = 34,
+    DccQueryLocoStatus = 34,
     /// Session keep alive.
     ///
     /// The cab sends a keep alive at regular intervals for the active session.
@@ -122,13 +123,13 @@ pub enum OpCode {
     /// Extended opcode with zero additional bytes.
     /// Reserved to allow the 0 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc.md")]
-    ExtOpcode = 63,
+    ExtOpCode = 63,
     /// Request engine session.
     ///
     /// This command is typically sent by a cab to the command station following a change of the controlled decoder address.
     /// RLOC is exactly equivalent to GLOC with all flag bits set to zero, but command stations
     #[doc = include_str!("../docs/opcode/rloc.md")]
-    DccQueryEngineSession = 64,
+    DccRequestNewSession = 64,
     /// Query Consist.
     ///
     /// Allows enumeration of a consist. Command station responds with PLOC if an engine exists at the specified index, otherwise responds
@@ -153,7 +154,7 @@ pub enum OpCode {
     /// Bit 2: service mode
     /// Bit 3:sound control mode
     #[doc = include_str!("../docs/opcode/stmod.md")]
-    DccSetCabSessionMode = 68,
+    DccSetThrottleMode = 68,
     /// Consist Engine.
     ///
     /// Adds a decoder specified by Session to a consist.
@@ -184,13 +185,13 @@ pub enum OpCode {
     /// Sent by a cab to turn on a specific loco function.
     /// This provides an alternative method to DFUN for controlling loco functions. A command
     #[doc = include_str!("../docs/opcode/dfnon.md")]
-    DccSetLocoFunctionOn = 73,
+    DccLocoFunctionOn = 73,
     /// Set Engine function off.
     ///
     /// Sent by a cab to turn off a specific loco function.
     /// This provides an alternative method to DFUN for controlling loco functions. A command
     #[doc = include_str!("../docs/opcode/dfnof.md")]
-    DccSetLocoFunctionOff = 74,
+    DccLocoFunctionOff = 74,
     /// Service mode status.
     ///
     /// Status returned by command station/programmer at the end of a programming operation that does not return data. Response to QCVS to indicate no data.
@@ -233,7 +234,7 @@ pub enum OpCode {
     /// Sent by a configuration tool to clear all events from a specific node.
     /// Must be in learn mode first to safeguard against accidental erasure of all events
     #[doc = include_str!("../docs/opcode/nnclr.md")]
-    ClearLearnedEvents = 85,
+    ForgetAllLearnedEvents = 85,
     /// Read the number of event slots available in a node.
     ///
     /// Sent by a configuration tool to read the number of available event slots in a node.
@@ -244,7 +245,7 @@ pub enum OpCode {
     /// There MUST be no hidden events.
     /// Sent by a configuration tool to read all the stored events in a node.
     #[doc = include_str!("../docs/opcode/nerd.md")]
-    QueryLearnedEvents = 87,
+    QueryAllLearnedEvents = 87,
     /// Request to read number of stored events.
     ///
     /// Sent by a configuration tool to read the number of stored events in a node.
@@ -261,7 +262,7 @@ pub enum OpCode {
     ///
     /// Sent by one node to read the data event from another node.(eg: RFID data).
     #[doc = include_str!("../docs/opcode/rqdat.md")]
-    RequestNodeDataEvent = 90,
+    QueryNodeData = 90,
     /// Request device data –short mode.
     ///
     /// To request a ‘data set’ from a device using the short event method where DN is the device number.
@@ -270,7 +271,7 @@ pub enum OpCode {
     /// Put node into bootloading mode.
     /// For modules with no NN then the NN of the command must be zero. For nodes in Normal mode the command must contain the NN of the target node. Sent by a configuration tool to prepare for loading a new program.
     #[doc = include_str!("../docs/opcode/bootm.md")]
-    PutNodeIntoBootMode = 92,
+    RebootIntoBootloader = 92,
     /// Force a self enumeration cycle for use with CAN.
     ///
     /// For nodes in Normal mode using CAN as a transport.
@@ -287,7 +288,7 @@ pub enum OpCode {
     ///
     /// Reserved to allow the 1 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc1.md")]
-    ExtOpcode1 = 95,
+    ExtOpCode1 = 95,
     /// Set Engine functions.
     ///
     /// <Fn1>is the function range 1 is F0(FL) to F4, 2 is F5 to F8, 3 is F9 to F12, 4 is F13 to F20, 5 is F21to F28) <Fn2> is the NMRA DCC format function byte for that range in corresponding bits. A bit set to 1 turns function “on” and a cleared bit sets function “off”. Sent by a CAB or equivalent to request an engine Fn state change.
@@ -303,7 +304,7 @@ pub enum OpCode {
     /// Sent in response to an error situation by a command station.
     /// See Appendix A - DCC ERR error codes for a list of error codes.
     #[doc = include_str!("../docs/opcode/err.md")]
-    DccCommandStationErrorReport = 99,
+    DccCommandStationError = 99,
     /// Error messages from nodes during configuration.
     ///
     /// Sent by node if there is an error when a configuration command is sent. See Appendix C - CMDERR error codes for the list of supported codes.
@@ -320,17 +321,17 @@ pub enum OpCode {
     /// NV# is the index for the node variable value requested.
     /// Response is NVANS.
     #[doc = include_str!("../docs/opcode/nvrd.md")]
-    ReadNodeVariable = 113,
+    QueryNodeVariable = 113,
     /// Request read of stored event by event index.
     ///
     /// EN# is the index for the stored event requested.
     #[doc = include_str!("../docs/opcode/nenrd.md")]
-    ReadLearnedEventByIndex = 114,
+    QueryLearnedEventByIndex = 114,
     /// Request read of a node parameter by index.
     ///
     /// Para# is the index for the parameter requested. Reading Index 0 first returns a PARAN with the number of available
     #[doc = include_str!("../docs/opcode/rqnpn.md")]
-    ReadNodeParameterByIndex = 115,
+    QueryNodeParameterByIndex = 115,
     /// Number of events stored by node.
     ///
     /// Response to request RQEVN
@@ -352,6 +353,12 @@ pub enum OpCode {
     /// If the ServiceIndex is zero then the module responds with a SD
     #[doc = include_str!("../docs/opcode/rqsd.md")]
     ServiceDiscoveryQuery = 120,
+    /// Extended opcode with 2 additional bytes.
+    ///
+    /// Reserved to allow the 2 additional bytes range to be extended by a
+    /// further 256 opcodes.
+    #[doc = include_str!("../docs/opcode/extc2.md")]
+    ExtOpCode2 = 127,
     /// Request 3-byte DCC Packet.
     ///
     /// Allows a CAB or equivalent to request a 3 byte DCC packet to be sent to the track. The packet is sent <REP> times and is not refreshed on a regular basis. Note: a 3 byte DCC packet is the minimum allowed.
@@ -418,7 +425,7 @@ pub enum OpCode {
     ///
     /// Sent by a configuration tool to remove an event from a node.
     #[doc = include_str!("../docs/opcode/evuln.md")]
-    RemoveLearnedEvent = 149,
+    ForgetLearnedEvent = 149,
     /// Set a node variable.
     ///
     /// Sent by a configuration tool to set a node variable. NV# is the NV index number.
@@ -467,7 +474,7 @@ pub enum OpCode {
     /// Extended opcode with 3 additional bytes.
     /// Reserved to allow the 3 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc3.md")]
-    ExtOpcode3 = 159,
+    ExtOpCode3 = 159,
     /// Request 4-byte DCC Packet.
     /// Allows a CAB or equivalent to request a 4 byte DCC packet to be sent to the track. The packet is sent <REP> times and is not refreshed on a regular basis.
     #[doc = include_str!("../docs/opcode/rdcc4.md")]
@@ -547,7 +554,7 @@ pub enum OpCode {
     /// Extended opcode with 4 additional bytes.
     /// Reserved to allow the 4 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc4.md")]
-    ExtOpcode4 = 191,
+    ExtOpCode4 = 191,
     /// Request 5-byte DCC Packet.
     /// Allows a CAB or equivalent to request a 5 byte DCC packet to be sent to the track. The packet is sent <REP> times and is not refreshed on a regular basis.
     #[doc = include_str!("../docs/opcode/rdcc5.md")]
@@ -586,7 +593,7 @@ pub enum OpCode {
     ///
     /// Sent by a configuration tool to a node in learn mode to teach it an event variable. Also teaches it the associated event. This command is repeated for each EV required.
     #[doc = include_str!("../docs/opcode/evlrn.md")]
-    TeachEventInLearnMode = 210,
+    TeachEvent = 210,
     /// Response to a request for an EV value in a node in learn mode.
     ///
     /// A node response to a request from a configuration tool for the EVs associated with an event (REQEV). For multiple EVs, there will be one
@@ -624,7 +631,7 @@ pub enum OpCode {
     ///
     /// Reserved to allow the 5 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc5.md")]
-    ExtOpcode5 = 223,
+    ExtOpCode5 = 223,
     /// Request 6-byte DCC Packet.
     ///
     /// Allows a CAB or equivalent to request a 6 byte DCC packet to be sent to the track. The packet is sent <REP> times and is not refreshed on a regular basis.
@@ -694,7 +701,7 @@ pub enum OpCode {
     ///
     /// Sent by a configuration tool to a node in learn mode to teach it an event. The event index must be known. Also teaches it the associated event variables (EVs). This command is repeated for each EV required. Parameter EN# is ignored and this request is similar to EVLRN.
     #[doc = include_str!("../docs/opcode/evlrni.md")]
-    TeachEventInLearnModeByIndex = 245,
+    TeachEventByIndex = 245,
     /// Accessory node data event.
     ///
     /// Indicates an event from this node with 5 bytes of data. For example, this can be used to send the 40 bits of an RFID tag. There is no event number in order to allow space for 5 bytes of data in the packet, so there can only be one data event per node. The meaning of the event is therefore dependent upon the type and use of the module.
@@ -744,18 +751,18 @@ pub enum OpCode {
     ///
     /// Reserved to allow the 6 additional bytes range to be extended by a further 256 opcodes.
     #[doc = include_str!("../docs/opcode/extc6.md")]
-    ExtOpcode6 = 255,
+    ExtOpCode6 = 255,
 }
 /// VLCB Service Types
 #[derive(
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -803,17 +810,18 @@ pub enum ServiceType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    FromPrimitive
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
 pub enum ModuleMode {
-    /// Uninitialised / factory settings
-    Uninitialised = 255,
+    /// Uninitialized / factory settings
+    #[default]
+    Uninitialized = 255,
     /// Set up mode
     InSetup = 0,
     /// Normal operation mode
@@ -838,11 +846,11 @@ pub enum ModuleMode {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -865,11 +873,11 @@ pub enum GenericResponseStatus {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -882,15 +890,15 @@ pub enum SysPixieModuleType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
-pub enum DccCabSessionMode {
+pub enum DccThrottleMode {
     /// 128-step speed mode
     Step128 = 0,
     /// 14-step speed mode
@@ -905,11 +913,11 @@ pub enum DccCabSessionMode {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -925,11 +933,11 @@ pub enum DccServiceModeStatus {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -958,11 +966,11 @@ pub enum SprogModuleType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -977,11 +985,11 @@ pub enum SpectrumModuleType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1010,11 +1018,11 @@ pub enum RocRailModuleType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1050,29 +1058,6 @@ pub enum ModuleParams {
     /// Beta revision (numeric), or 0 if release
     BetaVersion = 20,
 }
-/// Offsets to other values stored at the top of the parameter block.
-/// These are not returned by opcode PARAN, but are present in the hex
-/// file for FCU.
-#[derive(
-    Debug,
-    Copy,
-    Clone,
-    TryFromPrimitive,
-    UnsafeFromPrimitive,
-    IntoPrimitive,
-    Eq,
-    PartialEq,
-)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-#[repr(u8)]
-pub enum CbusParamOffsetsPic {
-    /// Number of parameters implemented
-    COUNT = 24,
-    /// 4 byte Address of Module type name, up to 8 characters null terminated
-    NAME = 26,
-    /// Checksum word at end of parameters
-    CKSUM = 30,
-}
 bitflags! {
     #[doc = " Flags in node parameter FLAGS"] #[derive(Debug, Copy, Clone)] pub struct
     ModuleFlags : u8 { #[doc = " Module doesn't support events"] const EventsUnsupported
@@ -1093,11 +1078,11 @@ bitflags! {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1290,11 +1275,11 @@ pub enum MergModuleType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1326,11 +1311,11 @@ pub enum Manufacturer {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1349,11 +1334,11 @@ pub enum DccError {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1398,11 +1383,11 @@ pub enum CommandError {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1421,11 +1406,11 @@ pub enum CabSignallingAspect1 {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1441,11 +1426,11 @@ pub enum CabDataCode {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1460,11 +1445,11 @@ pub enum BusType {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1508,11 +1493,11 @@ pub enum MicrochipProcessor {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
@@ -1526,11 +1511,11 @@ pub enum ArmProcessor {
     Debug,
     Copy,
     Clone,
-    TryFromPrimitive,
     UnsafeFromPrimitive,
     IntoPrimitive,
     Eq,
     PartialEq,
+    TryFromPrimitive,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
