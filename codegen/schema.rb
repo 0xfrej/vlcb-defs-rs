@@ -143,17 +143,17 @@ end
 
 class CodegenSchema < Dry::Validation::Contract
   params do
-    required(:version).filled(Types::String)
+    # required(:version).filled(Types::String)
     required(:spec).array(CodegenSpecSchema.schema)
   end
 
-  rule(:version) do
-    begin
-      Semverse::Version.new(value)
-    rescue Semverse::InvalidVersionFormat
-      key.failure('must be a valid semver version')
-    end
-  end
+  # rule(:version) do
+  #   begin
+  #     Semverse::Version.new(value)
+  #   rescue Semverse::InvalidVersionFormat
+  #     key.failure('must be a valid semver version')
+  #   end
+  # end
 end
 
 def load_and_validate_yaml(file_path)

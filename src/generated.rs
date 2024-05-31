@@ -1026,7 +1026,7 @@ pub enum RocRailModuleType {
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(u8)]
-pub enum ModuleParams {
+pub enum ModuleParam {
     /// Number of parameters
     ModuleParameterCount = 0,
     /// Manufacturer id

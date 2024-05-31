@@ -38,8 +38,9 @@ def generate_rust(spec)
 
   puts "Generating Rust files"
   update_generated_files(spec)
-  puts "Updating Cargo library version to " + spec[:version]
-  update_crate_version(spec)
+  # todo: instead using schema to dictate the current version, bump automatically unless a flag is passed into the command
+  # puts "Updating Cargo library version to " + spec[:version]
+  # update_crate_version(spec)
   puts "Running formatter"
   format_files()
   puts "Done"

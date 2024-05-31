@@ -14,16 +14,20 @@ default-features = false
 version = "0.3"
 optional = true
 
+[dependencies.byteorder]
+version = "1.0"
+default-features = false
+
 [package]
 name = "vlcb-defs"
-version = "0.1.0-alpha.2"
+version = "0.1.0-alpha.3"
 edition = "2021"
 rust-version = "1.71.0"
 documentation = "https://docs.rs/vlcb-defs"
 homepage = "https://github.com/0xfrej/vlcb-defs-rs"
 repository = "https://github.com/0xfrej/vlcb-defs-rs"
 license = "Apache-2.0"
-description = "VLCB protocol value definitions"
+description = "VLCB protocol core library containing important value definitions and data structures"
 authors = [ "Freja <me@freja.codes>" ]
 keywords = [ "lcb", "vlcb", "cbus", "merg" ]
 exclude = [ "/codegen", "/Makefile" ]
