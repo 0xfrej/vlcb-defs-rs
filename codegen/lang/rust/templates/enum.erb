@@ -5,6 +5,9 @@ pub enum <%= enum[:identifier] %> {
     <% if variant['comments'] %>
     <%= renderer.r 'docblok', lines: variant['comments'] %>
     <% end %>
+    <% if variant['annotations'] %>
+    <%= renderer.r 'annotations', annotations: variant['annotations'] %>
+    <% end %>
     <% if variant['is_default'] == true %>
     #[default]
     <% end %>

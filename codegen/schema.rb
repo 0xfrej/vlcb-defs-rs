@@ -2,6 +2,13 @@ require 'yaml'
 require 'dry-validation'
 require 'dry-types'
 require 'semverse'
+require 'pathname'
+require 'psych'
+
+def include_file(node)
+  filename = node.value
+  YAML.load_file(filename)
+end
 
 module Types
   include Dry.Types()
@@ -30,10 +37,22 @@ class FlagsBodySchema < Dry::Validation::Contract
     required(:identifier).filled(Types::String)
     required(:value).filled(Types::Integer)
     optional(:comments).maybe(Types::String)
+    optional(:commentsFrom).maybe(Types::String)
   end
 
   rule(:identifier) do
     key.failure('cannot start with a numeric character') if value =~ /^\d/
+  end
+
+  rule(:commentsFrom) do
+    if key && value
+      script_path = Pathname.new(__dir__).join('../')
+      file_path = script_path.join(value)
+
+      unless file_path.file?
+        key.failure("must be a valid path and point to an existing file")
+      end
+    end
   end
 end
 
@@ -45,10 +64,22 @@ class EnumBodySchema < Dry::Validation::Contract
     required(:value).filled(Types::Any)
     optional(:is_default).maybe(Types::BoolWithDefaultFalse)
     optional(:comments).maybe(Types::String)
+    optional(:commentsFrom).maybe(Types::String)
   end
 
   rule(:identifier) do
     key.failure('cannot start with a numeric character') if value =~ /^\d/
+  end
+
+  rule(:commentsFrom) do
+    if key && value
+      script_path = Pathname.new(__dir__).join('../')
+      file_path = script_path.join(value)
+
+      unless file_path.file?
+        key.failure("must be a valid path and point to an existing file")
+      end
+    end
   end
 end
 
@@ -58,6 +89,7 @@ class CodegenSpecSchema < Dry::Validation::Contract
     optional(:data_type).maybe(Types::String)
     required(:identifier).filled(Types::String)
     optional(:comments).maybe(Types::String)
+    optional(:commentsFrom).maybe(Types::String)
     optional(:body).array(:hash)
   end
 
@@ -96,6 +128,17 @@ class CodegenSpecSchema < Dry::Validation::Contract
       end
     end
   end
+
+  rule(:commentsFrom) do
+    if key && value
+      script_path = Pathname.new(__dir__).join('../')
+      file_path = script_path.join(value)
+
+      unless file_path.file?
+        key.failure("must be a valid path and point to an existing file")
+      end
+    end
+  end
 end
 
 class CodegenSchema < Dry::Validation::Contract
@@ -114,6 +157,10 @@ class CodegenSchema < Dry::Validation::Contract
 end
 
 def load_and_validate_yaml(file_path)
+  YAML.add_domain_type('', 'include') do |type, val|
+    include_file(Psych::Nodes::Scalar.new(val))
+  end
+
   data = YAML.load_file(file_path)
   schema = CodegenSchema.new
   validation_result = schema.call(data)

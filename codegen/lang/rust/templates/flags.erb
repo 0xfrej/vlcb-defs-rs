@@ -10,6 +10,9 @@ bitflags! {
         <% if flag['comments'] %>
         <%= renderer.r 'docblok', lines: flag['comments'] %>
         <% end %>
+        <% if flag['annotations'] %>
+        <%= renderer.r 'annotations', annotations: flag['annotations'] %>
+        <% end %>
         const <%= flag['identifier'] %> = <%= "0b" + ("%0#{flags[:data_type_size]}b" % flag['value']) %>;
         <% end %>
     }

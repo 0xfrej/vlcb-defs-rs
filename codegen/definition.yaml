@@ -554,13 +554,6 @@ spec:
       # - identifier: CANDEV
       #   value: 0xFC
       #   comments: Module type for use by developers when developing something new
-  - type: Enum
-    identifier: OpCode
-    data_type: u8
-    comments: |
-      VLCB opcodes
-    body:
-      #todo: copy stuff with comments from the docs
   - type: Flags
     identifier: ModuleFlags
     data_type: u8
@@ -913,3 +906,4 @@ spec:
       - identifier: Streaming
         value: 17
         comments: Streaming (Long Messages) service.
+  - !include opcodes.yaml

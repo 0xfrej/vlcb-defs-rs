@@ -86,6 +86,13 @@ def gen_enum(ctx, renderer, enum)
   enum[:comments] = parse_comments(enum[:comments])
   enum[:body].each do |variant|
     variant['comments'] = parse_comments(variant['comments'])
+
+    if variant['commentsFrom']
+      variant['annotations'] = [
+        "doc  = include_str!(\"../#{variant['commentsFrom']}\")"
+      ]
+    end
+
     if variant['is_default'] == true
       ctx[:imports].add('num_enum::FromPrimitive')
       extra_derives.add('FromPrimitive')
@@ -97,6 +104,10 @@ def gen_enum(ctx, renderer, enum)
     'cfg_attr(feature = "defmt", derive(defmt::Format))',
     "repr(#{enum[:data_type]})",
   ]
+
+  if ctx[:commentsFrom]
+    flags[:annotations].append("doc  = include_str!(\"../#{ctx[:commentsFrom]}\")")
+  end
 
   output = renderer.r('enum', enum: enum)
   ctx[:body] = "#{output}#{ctx[:body]}"
@@ -112,11 +123,21 @@ def gen_flags(ctx, renderer, flags)
   flags[:comments] = parse_comments(flags[:comments])
   flags[:body].each do |flag|
     flag['comments'] = parse_comments(flag['comments'])
+
+    if flag['commentsFrom']
+      flag['annotations'] = [
+        "doc  = include_str!(\"../#{flag['commentsFrom']}\")"
+      ]
+    end
   end
 
   flags[:annotations] = [
     'derive(Debug, Copy, Clone)'
   ]
+
+  if ctx[:commentsFrom]
+    flags[:annotations].append("doc  = include_str!(\"../#{ctx[:commentsFrom]}\")")
+  end
 
   output = renderer.r('flags', flags: flags)
   ctx[:body] = "#{output}#{ctx[:body]}"
